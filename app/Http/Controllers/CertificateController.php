@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Response;
-
+use Illuminate\Support\Facades\Response;
 class CertificateController extends Controller
 {
     /**
@@ -12,7 +11,7 @@ class CertificateController extends Controller
      */
     public function index(Request $request)
     {
-        $json_data = "";
+        $json_data = [];
         // if ($request->q){
         //     $json_data = file_get_contents('https://crt.sh/?q=' . $request->q . '&output=json');
         // }
@@ -23,7 +22,7 @@ class CertificateController extends Controller
         if ($json_data){
             $json_data = $obj = json_decode($json_data);
         }
-        
+
         if ((boolean)json_decode(strtolower($request->expired_only))){
             $filtered = [];
             $current_time = time();
@@ -35,7 +34,7 @@ class CertificateController extends Controller
             $json_data = $filtered;
         }
 
-        return Response::json($json_data);
+        return Response::json($json_data, 200);
     }
 
 }

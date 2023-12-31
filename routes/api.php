@@ -1,9 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CertificateController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -20,5 +17,7 @@ use App\Http\Controllers\CertificateController;
 //     return $request->user();
 // });
 
-Route::get('/certificates',[CertificateController::class, 'index']);
+Route::get('/certificates',[\App\Http\Controllers\CertificateController::class, 'index']);
+Route::post('/notifications',[\App\Http\Controllers\NotificationController::class, 'store']);
+
 
