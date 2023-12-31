@@ -24,8 +24,7 @@ class NotificationController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'days' => 'required|integer',
-            'certificate' => 'required',
-            'certificate.not_after' => 'required|date|after:'.$request->get('days').'day'
+            'certificate' => 'required'
         ]);
         if ($validator->fails()) {
             return Response::json($validator->errors());
@@ -35,11 +34,12 @@ class NotificationController extends Controller
         $subscriber = Subscriber::firstOrCreate([
             "email" => $validated['email']
         ]);
+        
         $certificate = Certificate::find($validated['certificate']['id']);
 
         if (!$certificate){
             $certificate = $validated['certificate'];
-            $certificate = Certificate::firstOrCreate([
+            $certificate = Certificate::Create([
                 "id" => $certificate['id'],
                 "issuer_ca_id" => $certificate['issuer_ca_id'],
                 "issuer_name" => $certificate['issuer_name'],
@@ -51,10 +51,11 @@ class NotificationController extends Controller
                 "serial_number" => $certificate['serial_number'],
             ]);
         }
+
         $notification = SubscriberCertificateNotification::firstOrCreate([
             "certificate_id" => $certificate->id,
             "subscriber_id" => $subscriber->id,
-            "event_time" => Carbon::createFromTimestampUTC(strtotime($request->days.'day', strtotime($certificate->not_after)))
+            "event_time" => Carbon::createFromTimestampUTC(strtotime('-'.$validated['days'].'day', strtotime($certificate->not_after)))
         ]);
 
         Mail::to($subscriber->email)->send(new SubscriptionNotification($subscriber));
